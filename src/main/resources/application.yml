@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: smart-service-booking
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://ep-cool-waterfall-ahl3fq1x-pooler.c-3.us-east-1.aws.neon.tech?sslmode=require}
+    username: ${SPRING_DATASOURCE_USERNAME:booking-api}
+    password: ${SPRING_DATASOURCE_PASSWORD:neondb_owner}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        # Neon works best with these settings for cloud connections
+        hibernate.temp.use_jdbc_metadata_defaults: false
+
+server:
+  port: 8080
