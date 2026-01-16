@@ -1,0 +1,33 @@
+services:
+  db:
+    image: postgres:15
+    container_name: property_rent_db
+    environment:
+      POSTGRES_DB: property_rent
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: long@310808
+      POSTGRES_PORT: 5432
+    ports:
+      - "5433:5432" # host port 5433 to avoid local port conflict
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  api:
+    build: .
+    container_name: property_rent_api
+    env_file:
+      - .env
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      DB_HOST: db
+      POSTGRES_DB: property_rent
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: long@310808
+      POSTGRES_PORT: 5432
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
