@@ -1,6 +1,9 @@
 package com.booking.booking_api.Controller;
 
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,6 +15,7 @@ import com.booking.booking_api.Service.AuthService;
 
 @RestController
 @RequestMapping("/api/auth")
+@Tag(name = "Authentication", description = "Endpoints for user registration and login with JWT tokens")
 public class AuthController {
 
     private final AuthService authService;
@@ -20,24 +24,26 @@ public class AuthController {
         this.authService = authService;
     }
 
+    @Operation(summary = "Register a new user")
+    @ApiResponse(responseCode = "200", description = "User registered successfully")
     @PostMapping("/register")
     public ResponseEntity<RegisterResponse> register(@RequestBody RegisterRequest request) {
-        return ResponseEntity.ok(
-                authService.register(
-                        request.getFullName(),
-                        request.getEmail(),
-                        request.getPassword()
-                )
+        RegisterResponse response = authService.register(
+                request.getFullName(),
+                request.getEmail(),
+                request.getPassword()
         );
+        return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Login user")
+    @ApiResponse(responseCode = "200", description = "Login successful")
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
-        return ResponseEntity.ok(
-                authService.login(
-                        request.getEmail(),
-                        request.getPassword()
-                )
+        LoginResponse response = authService.login(
+                request.getEmail(),
+                request.getPassword()
         );
+        return ResponseEntity.ok(response);
     }
 }
