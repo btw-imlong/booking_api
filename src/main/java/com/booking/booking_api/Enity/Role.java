@@ -11,6 +11,8 @@ import java.util.*;
 @AllArgsConstructor
 public class Role {
 
+    public static final Role ADMIN = null;
+
     @Id
     @GeneratedValue
     private UUID id;
