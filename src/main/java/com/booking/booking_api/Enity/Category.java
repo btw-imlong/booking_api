@@ -12,13 +12,16 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Category {
 
-    public Category(Object object, String string) {
-        //TODO Auto-generated constructor stub
-    }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
     private String description;
+
+    // Proper constructor for service
+    public Category(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
 }

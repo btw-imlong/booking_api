@@ -26,20 +26,21 @@ public class JwtService {
         return Keys.hmacShaKeyFor(jwtSecret.getBytes());
     }
 
-    public String generateToken(User user) {
-        return Jwts.builder()
-                .setSubject(user.getEmail())
-                .claim("roles",
-                        user.getRoles()
-                                .stream()
-                                .map(role -> role.getName())
-                                .collect(Collectors.toList())
-                )
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
-                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
-                .compact();
-    }
+   public String generateToken(User user) {
+    return Jwts.builder()
+            .setSubject(user.getEmail())
+            .claim("roles",
+                    user.getRoles()
+                            .stream()
+                            .map(role -> "ROLE_" + role.getName()) // <-- add ROLE_ prefix
+                            .collect(Collectors.toList())
+            )
+            .setIssuedAt(new Date())
+            .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
+            .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+            .compact();
+}
+
 
     public Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()

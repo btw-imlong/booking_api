@@ -7,7 +7,8 @@ import com.booking.booking_api.Repositories.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class CategoryService {
@@ -44,4 +45,15 @@ public class CategoryService {
     public void delete(Long id) {
         categoryRepository.deleteById(id);
     }
+
+    // Simple get all method
+    public List<CategoryResponse> getAll() {
+        List<Category> categories = categoryRepository.findAll();
+        List<CategoryResponse> responses = new ArrayList<>();
+        for (Category category : categories) {
+            responses.add(toResponse(category));
+        }
+        return responses;
+    }
+
 }
