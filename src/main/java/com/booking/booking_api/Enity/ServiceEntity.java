@@ -17,22 +17,29 @@ public class ServiceEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // Provider (Owner of service)
     @ManyToOne
     @JoinColumn(name = "provider_id", nullable = false)
-    private User provider; 
+    private User provider;
 
     private String name;
+
     private String description;
+
     private BigDecimal price;
-    
-    // ----------- CHANGE THIS LINE -----------
-    @Column(name = "duration") // Changed from "duration_minutes" to "duration"
+
+    // Duration in minutes
+    @Column(name = "duration")
     private Integer durationMinutes;
-    // ----------------------------------------
-    
-    @Column(name = "active") 
+
+    // Service active (soft delete / enable-disable)
+    @Column(name = "active")
     private Boolean isActive;
-    
+
+    // NEW: Service availability (booking open/close)
+    @Column(name = "is_available")
+    private Boolean isAvailable;
+
     @Column(name = "created_at")
     private Instant createdAt;
 
@@ -40,5 +47,6 @@ public class ServiceEntity {
     public void prePersist() {
         createdAt = Instant.now();
         if (isActive == null) isActive = true;
+        if (isAvailable == null) isAvailable = true; // default available
     }
 }
