@@ -35,6 +35,7 @@ public class JwtService {
                             .map(role -> "ROLE_" + role.getName()) // <-- add ROLE_ prefix
                             .collect(Collectors.toList())
             )
+            .claim("userId", user.getId())
             .setIssuedAt(new Date())
             .setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
             .signWith(getSigningKey(), SignatureAlgorithm.HS256)
@@ -52,5 +53,22 @@ public class JwtService {
 
     public String extractEmail(String token) {
         return extractAllClaims(token).getSubject();
+    }
+
+    public Long extractUserId(String token) {
+        Object id = extractAllClaims(token).get("userId");
+        if (id instanceof Integer) {
+            return ((Integer) id).longValue(); // JWT may store as Integer
+        } else if (id instanceof Long) {
+            return (Long) id;
+        }
+        return null;
+    }
+    public boolean isTokenExpired(String token) {
+        return extractAllClaims(token).getExpiration().before(new Date());
+    }
+    public boolean validateToken(String token, User user) {
+        final String email = extractEmail(token);
+        return (email.equals(user.getEmail()) && !isTokenExpired(token));
     }
 }
