@@ -1,6 +1,7 @@
 package com.booking.booking_api.Service;
 
 import com.booking.booking_api.DTORequest.ServiceRequest;
+import com.booking.booking_api.DTORequest.UpdateAvailabilityRequest;
 import com.booking.booking_api.DTORespone.ServiceResponse;
 import com.booking.booking_api.Enity.ServiceEntity;
 import com.booking.booking_api.Enity.User;
@@ -19,7 +20,7 @@ public class ServiceService {
     private final ServiceRepository serviceRepository;
     private final UserRepository userRepository;
 
-    // ------------------ CREATE ------------------
+    // ------------------ CREATE SERVICE ------------------
     public ServiceResponse createService(ServiceRequest request, String email) {
         User provider = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -31,47 +32,27 @@ public class ServiceService {
                 .price(request.getPrice())
                 .durationMinutes(request.getDurationMinutes())
                 .isActive(request.getIsActive() != null ? request.getIsActive() : true)
+                .isAvailable(true) // default available
                 .build();
 
         ServiceEntity saved = serviceRepository.save(service);
 
-        return new ServiceResponse(
-                saved.getId(),
-                saved.getName(),
-                saved.getDescription(),
-                saved.getPrice(),
-                saved.getDurationMinutes(),
-                saved.getIsActive()
-        );
+        return mapToResponse(saved);
     }
 
-    // ------------------ GET ALL ------------------
+    // ------------------ GET ALL SERVICES ------------------
     public List<ServiceResponse> getAllServices() {
         return serviceRepository.findAll().stream()
-                .map(service -> new ServiceResponse(
-                        service.getId(),
-                        service.getName(),
-                        service.getDescription(),
-                        service.getPrice(),
-                        service.getDurationMinutes(),
-                        service.getIsActive()
-                ))
+                .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
 
-    // ------------------ GET BY ID ------------------
+    // ------------------ GET SERVICE BY ID ------------------
     public ServiceResponse getServiceById(Long id) {
         ServiceEntity service = serviceRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Service not found with id: " + id));
 
-        return new ServiceResponse(
-                service.getId(),
-                service.getName(),
-                service.getDescription(),
-                service.getPrice(),
-                service.getDurationMinutes(),
-                service.getIsActive()
-        );
+        return mapToResponse(service);
     }
 
     // ------------------ GET ONLY IDS ------------------
@@ -79,5 +60,29 @@ public class ServiceService {
         return serviceRepository.findAll().stream()
                 .map(ServiceEntity::getId)
                 .collect(Collectors.toList());
+    }
+
+    // ------------------ UPDATE AVAILABILITY ------------------
+    public ServiceResponse updateAvailability(Long serviceId, UpdateAvailabilityRequest request) {
+        ServiceEntity service = serviceRepository.findById(serviceId)
+                .orElseThrow(() -> new RuntimeException("Service not found"));
+
+        service.setIsAvailable(request.isAvailable());
+        ServiceEntity updated = serviceRepository.save(service);
+
+        return mapToResponse(updated);
+    }
+
+    // ------------------ HELPER: MAP ENTITY TO RESPONSE ------------------
+    private ServiceResponse mapToResponse(ServiceEntity service) {
+        return new ServiceResponse(
+                service.getId(),
+                service.getName(),
+                service.getDescription(),
+                service.getPrice(),
+                service.getDurationMinutes(),
+                service.getIsActive(),
+                service.getIsAvailable() // added availability
+        );
     }
 }

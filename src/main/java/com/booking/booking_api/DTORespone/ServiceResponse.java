@@ -1,4 +1,5 @@
 package com.booking.booking_api.DTORespone;
+
 import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,4 +13,5 @@ public class ServiceResponse {
     private BigDecimal price;
     private Integer durationMinutes;
     private Boolean isActive;
+    private Boolean isAvailable; // added availability
 }

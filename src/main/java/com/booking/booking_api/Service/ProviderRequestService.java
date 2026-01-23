@@ -53,25 +53,31 @@ public class ProviderRequestService {
     }
 
     // ADMIN approves request
-    public ProviderRequest approveRequest(UUID id, User admin) {
-        checkAdmin(admin);
+   public ProviderRequest approveRequest(UUID id, User admin) {
+    checkAdmin(admin);
 
-        ProviderRequest request = requestRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Request not found"));
+    ProviderRequest request = requestRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Request not found"));
 
-        request.setStatus(RequestStatus.APPROVED);
-        requestRepository.save(request);
+    request.setStatus(RequestStatus.APPROVED);
+    requestRepository.save(request);
 
-        // Add PROVIDER role to user
-        User user = request.getUser();
-        Role providerRole = roleRepository.findByName("PROVIDER")
-                .orElseThrow(() -> new RuntimeException("Role PROVIDER not found"));
+    User user = request.getUser();
 
-        user.setRoles(Set.of(providerRole)); // ✅ only PROVIDER role
-        userRepository.save(user);
+    Role providerRole = roleRepository.findByName("PROVIDER")
+            .orElseThrow(() -> new RuntimeException("Role PROVIDER not found"));
 
-        return request;
-    }
+    // 🔥 Clear old roles FIRST
+    user.getRoles().clear();
+
+    // 🔥 Add PROVIDER only
+    user.getRoles().add(providerRole);
+
+    userRepository.save(user);
+
+    return request;
+}
+
 
     // ADMIN rejects request
     public ProviderRequest rejectRequest(UUID id, User admin) {
