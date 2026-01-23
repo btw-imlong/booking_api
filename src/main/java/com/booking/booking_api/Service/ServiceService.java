@@ -9,6 +9,9 @@ import com.booking.booking_api.Repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class ServiceService {
@@ -16,12 +19,11 @@ public class ServiceService {
     private final ServiceRepository serviceRepository;
     private final UserRepository userRepository;
 
+    // ------------------ CREATE ------------------
     public ServiceResponse createService(ServiceRequest request, String email) {
-        // 1. Get logged-in user
         User provider = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // 2. Map request -> entity
         ServiceEntity service = ServiceEntity.builder()
                 .provider(provider)
                 .name(request.getName())
@@ -31,10 +33,8 @@ public class ServiceService {
                 .isActive(request.getIsActive() != null ? request.getIsActive() : true)
                 .build();
 
-        // 3. Save
         ServiceEntity saved = serviceRepository.save(service);
 
-        // 4. Map entity -> response
         return new ServiceResponse(
                 saved.getId(),
                 saved.getName(),
@@ -43,5 +43,41 @@ public class ServiceService {
                 saved.getDurationMinutes(),
                 saved.getIsActive()
         );
+    }
+
+    // ------------------ GET ALL ------------------
+    public List<ServiceResponse> getAllServices() {
+        return serviceRepository.findAll().stream()
+                .map(service -> new ServiceResponse(
+                        service.getId(),
+                        service.getName(),
+                        service.getDescription(),
+                        service.getPrice(),
+                        service.getDurationMinutes(),
+                        service.getIsActive()
+                ))
+                .collect(Collectors.toList());
+    }
+
+    // ------------------ GET BY ID ------------------
+    public ServiceResponse getServiceById(Long id) {
+        ServiceEntity service = serviceRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Service not found with id: " + id));
+
+        return new ServiceResponse(
+                service.getId(),
+                service.getName(),
+                service.getDescription(),
+                service.getPrice(),
+                service.getDurationMinutes(),
+                service.getIsActive()
+        );
+    }
+
+    // ------------------ GET ONLY IDS ------------------
+    public List<Long> getAllServiceIds() {
+        return serviceRepository.findAll().stream()
+                .map(ServiceEntity::getId)
+                .collect(Collectors.toList());
     }
 }

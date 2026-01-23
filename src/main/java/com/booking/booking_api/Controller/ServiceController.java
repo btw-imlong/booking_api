@@ -12,6 +12,7 @@ import com.booking.booking_api.DTORespone.ServiceResponse;
 import com.booking.booking_api.Service.ServiceService;
 
 import java.security.Principal;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,16 +21,44 @@ public class ServiceController {
 
     private final ServiceService serviceService;
 
+    // ------------------ CREATE SERVICE ------------------
     @PostMapping("/create")
-    // FIX: Checks for 'ADMIN', 'ROLE_ADMIN', 'PROVIDER', or 'ROLE_PROVIDER'
-    // This covers almost all naming conventions to stop the 403 error.
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'ROLE_ADMIN', 'PROVIDER', 'ROLE_PROVIDER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN','ROLE_ADMIN','PROVIDER','ROLE_PROVIDER')")
     public ResponseEntity<ServiceResponse> create(@RequestBody ServiceRequest request, Principal principal) {
-        
-        // Debug Print: Check your console logs to see what role the user actually has
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        System.out.println("DEBUG: User '" + principal.getName() + "' has roles: " + auth.getAuthorities());
-
+        System.out.println("DEBUG: CREATE Service - User '" + principal.getName() + "' roles: " + auth.getAuthorities());
         return ResponseEntity.ok(serviceService.createService(request, principal.getName()));
+    }
+
+    // ------------------ GET ALL SERVICES ------------------
+    @GetMapping
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<ServiceResponse>> getAllServices() {
+        List<ServiceResponse> services = serviceService.getAllServices();
+        return ResponseEntity.ok(services);
+    }
+
+    // Optional `/all` alias
+    @GetMapping("/")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<ServiceResponse>> getAllServicesAlias() {
+        List<ServiceResponse> services = serviceService.getAllServices();
+        return ResponseEntity.ok(services);
+    }
+
+    // ------------------ GET SERVICE BY ID ------------------
+    @GetMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ServiceResponse> getServiceById(@PathVariable Long id) {
+        ServiceResponse service = serviceService.getServiceById(id);
+        return ResponseEntity.ok(service);
+    }
+
+    // ------------------ GET ONLY SERVICE IDS ------------------
+    @GetMapping("/ids")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<Long>> getServiceIds() {
+        List<Long> ids = serviceService.getAllServiceIds();
+        return ResponseEntity.ok(ids);
     }
 }
