@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -14,8 +15,13 @@ import java.time.Instant;
 public class ServiceEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(generator = "UUID")
+    @org.hibernate.annotations.GenericGenerator(
+        name = "UUID",
+        strategy = "org.hibernate.id.UUIDGenerator"
+    )
+    @Column(updatable = false, nullable = false, columnDefinition = "uuid")
+    private UUID id;
 
     // Provider (Owner of service)
     @ManyToOne
@@ -23,9 +29,7 @@ public class ServiceEntity {
     private User provider;
 
     private String name;
-
     private String description;
-
     private BigDecimal price;
 
     // Duration in minutes
@@ -36,7 +40,7 @@ public class ServiceEntity {
     @Column(name = "active")
     private Boolean isActive;
 
-    // NEW: Service availability (booking open/close)
+    // Service availability (booking open/close)
     @Column(name = "is_available")
     private Boolean isAvailable;
 
@@ -47,6 +51,6 @@ public class ServiceEntity {
     public void prePersist() {
         createdAt = Instant.now();
         if (isActive == null) isActive = true;
-        if (isAvailable == null) isAvailable = true; // default available
+        if (isAvailable == null) isAvailable = true;
     }
 }
