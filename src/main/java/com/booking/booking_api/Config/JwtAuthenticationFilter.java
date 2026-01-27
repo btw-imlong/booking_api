@@ -40,14 +40,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 List<String> roles = (List<String>) claims.get("roles");
 
                 var authorities = roles.stream()
-                        .map(SimpleGrantedAuthority::new)
+                        .map(SimpleGrantedAuthority::new) // Keep ROLE_ prefix
                         .collect(Collectors.toList());
+
+                System.out.println("DEBUG: JWT email = " + email);
+                System.out.println("DEBUG: JWT roles = " + roles);
+                System.out.println("DEBUG: Authorities = " + authorities);
+
 
                 var authToken = new UsernamePasswordAuthenticationToken(email, null, authorities);
                 SecurityContextHolder.getContext().setAuthentication(authToken);
 
             } catch (Exception e) {
-                // token invalid or expired
                 SecurityContextHolder.clearContext();
             }
         }
