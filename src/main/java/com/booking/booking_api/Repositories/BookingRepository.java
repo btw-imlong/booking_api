@@ -3,6 +3,8 @@ package com.booking.booking_api.Repositories;
 import com.booking.booking_api.Enity.Booking;
 import com.booking.booking_api.Enity.BookingStatus;
 import com.booking.booking_api.Enity.ServiceEntity;
+import com.google.common.base.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDate;
@@ -19,10 +21,9 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
         LocalTime endTime,
         LocalTime startTime
     );
-
     List<Booking> findByCustomerEmail(String email);
-
     List<Booking> findByServiceProviderEmail(String email);
-
     List<Booking> findByServiceAndBookingDateAndStatus(ServiceEntity service, LocalDate date, BookingStatus status);
+    
+    
 }

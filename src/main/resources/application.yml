@@ -36,3 +36,13 @@ springdoc:
     tags-sorter: alpha
   api-docs:
     path: /v3/api-docs
+
+
+
+# ===============================
+# PAYPAL CONFIG
+# ===============================
+paypal:
+  client-id: AfH8Vyc9EFoesoFycouhCgotm50MMdFN1lykudeM-2gAv3A5GIwlBy7764tmSVTUy9lljACB4LG9grrs
+  client-secret: ECzxoxACZ4SxmurULZ40d3Lql51ReuCPq-KtrcgxdQQ3obu4lkavTFE9M_iUo2M9E5oIr8jTdHOD1cR8
+  mode: sandbox

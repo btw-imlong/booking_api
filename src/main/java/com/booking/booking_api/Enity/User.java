@@ -37,4 +37,11 @@ public class User {
         inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> roles = new HashSet<>();
+   
+
+
+    @Enumerated(EnumType.STRING)
+    private AuthProvider provider;
+    private String providerId;
+    private String role = "USER";
 }
